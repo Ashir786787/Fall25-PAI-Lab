@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Medical Chatbot (FAISS + MiniLM)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <main class="app-shell">
+        <section class="chat-card">
+            <header class="chat-header">
+                <h1>AI Medical Chatbot</h1>
+                <p>Powered by FAISS and Hugging Face MiniLM</p>
+            </header>
+
+            <div id="chat-box" class="chat-box" aria-live="polite"></div>
+
+            <form id="chat-form" class="chat-form">
+                <input
+                    id="user-input"
+                    type="text"
+                    placeholder="Type your question here..."
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit">Send</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const chatForm = document.getElementById("chat-form");
+        const userInput = document.getElementById("user-input");
+        const chatEndpoint = "{{ url_for('chat') }}";
+
+        function addMessage(text, sender) {
+            const bubble = document.createElement("div");
+            bubble.className = `bubble ${sender}`;
+            bubble.textContent = text;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        addMessage(
+            "Hello! I am an AI-powered Medical Bot. You can ask me about hospital timings, doctors, and departments.",
+            "bot"
+        );
+
+        chatForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, "user");
+            userInput.value = "";
+
+            try {
+                const response = await fetch(chatEndpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.reply || "Server request failed.");
+                }
+
+                addMessage(data.reply || "No response from bot.", "bot");
+            } catch (error) {
+                addMessage(
+                    "Connection issue. Please ensure the app is running.",
+                    "bot"
+                );
+            }
+        });
+    </script>
+</body>
+</html>
