@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Center Information Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <main class="app-shell">
+        <section class="chat-card">
+            <header class="chat-header">
+                <h1>Medical Center Information Bot</h1>
+                <p>Ask about appointments, departments, and doctors.</p>
+            </header>
+
+            <div id="chat-box" class="chat-box" aria-live="polite"></div>
+
+            <form id="chat-form" class="chat-form">
+                <input
+                    id="user-input"
+                    type="text"
+                    placeholder="Type your question here..."
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit">Send</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const chatForm = document.getElementById("chat-form");
+        const userInput = document.getElementById("user-input");
+        const chatEndpoint = "{{ url_for('chat') }}";
+
+        function addMessage(text, sender) {
+            const bubble = document.createElement("div");
+            bubble.className = `bubble ${sender}`;
+            bubble.textContent = text;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        addMessage(
+            "Hello. I am Medical Center Information Bot. How can I help you today?",
+            "bot"
+        );
+
+        chatForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, "user");
+            userInput.value = "";
+
+            try {
+                const response = await fetch(chatEndpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                addMessage(data.reply, "bot");
+            } catch (error) {
+                addMessage("Error connecting to server.", "bot");
+            }
+        });
+    </script>
+</body>
+</html>
