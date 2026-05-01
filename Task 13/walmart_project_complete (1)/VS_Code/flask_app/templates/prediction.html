@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictor - Walmart Sales Forecasting</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-graph-up"></i> Walmart Sales AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/analytics">Analytics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/insights">Insights</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/prediction">Predictor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/project-info">Project Info</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4 animate-slide">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>Sales Predictor</h2>
+                <p class="text-muted">Predict weekly sales for different stores and departments</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Select Store & Department</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="predictionForm">
+                            <div class="mb-3">
+                                <label for="storeSelect" class="form-label fw-bold">Store ID</label>
+                                <select class="form-select" id="storeSelect">
+                                    <option value="">Choose a store...</option>
+                                    {% for store in stores %}
+                                        <option value="{{ store }}">Store {{ store }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="deptSelect" class="form-label fw-bold">Department</label>
+                                <select class="form-select" id="deptSelect">
+                                    <option value="">Choose a department...</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept }}">Department {{ dept }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Get Prediction</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mb-4">
+                <div class="card" id="resultCard" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0">Prediction Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="card p-3">
+                                    <h6>Predicted Sales</h6>
+                                    <h2 class="text-primary" id="predictedSales">-</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card p-3">
+                                    <h6>Confidence Level</h6>
+                                    <h2 class="text-success" id="confidence">-</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="table">
+                            <tbody>
+                                <tr><td><strong>Store ID:</strong></td><td id="resultStore">-</td></tr>
+                                <tr><td><strong>Department:</strong></td><td id="resultDept">-</td></tr>
+                                <tr><td><strong>Historical Avg:</strong></td><td id="histAvg">-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" id="noResultCard">
+                    <div class="card-body text-center py-5">
+                        <p class="text-muted">Select a store and department to see results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container-fluid text-center">
+            <p class="mb-0">Walmart Sales Forecasting | © 2026</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/prediction.js') }}"></script>
+</body>
+</html>
